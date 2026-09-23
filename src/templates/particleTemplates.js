@@ -252,7 +252,70 @@ export function generateHeart(count, target, time = 0) {
 }
 
 export function generateFlower(count, target, time = 0) {
-  for (let i = 0; i < count; i += 1) { const angle = (i / count) * TAU * 7 + time * 0.16; const radius = 0.18 + 0.85 * Math.abs(Math.sin(angle * 2.5)); const index = i * 3; target[index] = Math.cos(angle) * radius; target[index + 1] = Math.sin(i * 0.37) * 0.2; target[index + 2] = Math.sin(angle) * radius }
+  const bloomCount = Math.floor(count * 0.78)
+  const stemCount = Math.floor(count * 0.14)
+  for (let i = 0; i < count; i += 1) {
+    const index = i * 3
+    if (i < bloomCount) {
+      const progress = i / bloomCount
+      const angle = progress * TAU * 9 + time * 0.08
+      const layer = (i % 17) / 17
+      const petalWave = Math.max(0, Math.sin(angle * 2.5 + layer * 1.8))
+      const radius = 0.08 + layer * 0.72 * (0.35 + petalWave * 0.65)
+      target[index] = Math.cos(angle) * radius
+      target[index + 1] = 0.28 + Math.sin(angle * 2 + layer * 4) * 0.09 + layer * 0.12
+      target[index + 2] = Math.sin(angle) * radius
+    } else if (i < bloomCount + stemCount) {
+      const progress = (i - bloomCount) / stemCount
+      const angle = i * 2.41
+      target[index] = Math.cos(angle) * (0.045 + progress * 0.025) + Math.sin(progress * 5) * 0.04
+      target[index + 1] = 0.23 - progress * 1.35
+      target[index + 2] = Math.sin(angle) * (0.045 + progress * 0.025)
+    } else {
+      const progress = (i - bloomCount - stemCount) / (count - bloomCount - stemCount)
+      const side = i % 2 === 0 ? 1 : -1
+      const angle = progress * TAU * 2.5
+      target[index] = side * (0.1 + progress * 0.24) + Math.cos(angle) * 0.09
+      target[index + 1] = -0.35 - progress * 0.65
+      target[index + 2] = Math.sin(angle) * 0.12
+    }
+  }
+}
+
+export function generateBalloons(count, target, time = 0) {
+  const canopyCount = Math.floor(count * 0.8)
+  const stringCount = Math.floor(count * 0.16)
+  const balloonCenters = [[-0.48, 0.42, 0.16], [0.48, 0.42, 0.16], [0, 0.42, -0.32]]
+  const particlesPerBalloon = Math.ceil(canopyCount / balloonCenters.length)
+  for (let i = 0; i < count; i += 1) {
+    const index = i * 3
+    if (i < canopyCount) {
+      const balloonIndex = i % balloonCenters.length
+      const localIndex = Math.floor(i / balloonCenters.length)
+      const [x, y, z] = sphere(localIndex, particlesPerBalloon, 1)
+      const [centerX, centerY, centerZ] = balloonCenters[balloonIndex]
+      const lowerTaper = y < 0 ? 0.78 + (y + 1) * 0.22 : 1
+      const ovalWidth = 0.92 + (1 - Math.abs(y)) * 0.08
+      const sway = Math.sin(time * 0.7 + balloonIndex) * 0.012
+      target[index] = centerX + x * 0.36 * lowerTaper * ovalWidth + sway
+      target[index + 1] = centerY + y * 0.58
+      target[index + 2] = centerZ + z * 0.28 * lowerTaper * ovalWidth
+    } else if (i < canopyCount + stringCount) {
+      const progress = (i - canopyCount) / stringCount
+      const balloonIndex = (i - canopyCount) % balloonCenters.length
+      const [centerX, centerY, centerZ] = balloonCenters[balloonIndex]
+      const wave = Math.sin(progress * TAU * 2.5 + balloonIndex * Math.PI) * 0.055
+      target[index] = centerX + wave
+      target[index + 1] = centerY - 0.48 - progress * 0.78
+      target[index + 2] = centerZ + Math.sin(progress * TAU * 1.7 + balloonIndex) * 0.035
+    } else {
+      const balloonIndex = (i - canopyCount - stringCount) % balloonCenters.length
+      const [centerX, centerY, centerZ] = balloonCenters[balloonIndex]
+      target[index] = centerX + (i % 2 === 0 ? -0.04 : 0.04)
+      target[index + 1] = centerY - 0.5
+      target[index + 2] = centerZ
+    }
+  }
 }
 
 // Extract dominant colors from image
@@ -343,6 +406,6 @@ export function generateImagePattern(count, target, imageData, time = 0, colorTa
   }
 }
 
-export const TEMPLATE_GENERATORS = { Brain: generateBrain, DNA: generateDNA, Saturn: generateSaturn, Galaxy: generateGalaxy, 'Black Hole': generateBlackHole, Vortex: generateVortex, Explosion: generateExplosion, Flame: generateFlame, Fireworks: generateFireworks, Heart: generateHeart, Flower: generateFlower, Sphere: (count, target) => { for (let i = 0; i < count; i += 1) { const [x, y, z] = sphere(i, count); const index = i * 3; target[index] = x; target[index + 1] = y; target[index + 2] = z } } }
+export const TEMPLATE_GENERATORS = { Brain: generateBrain, DNA: generateDNA, Saturn: generateSaturn, Galaxy: generateGalaxy, 'Black Hole': generateBlackHole, Vortex: generateVortex, Explosion: generateExplosion, Flame: generateFlame, Fireworks: generateFireworks, Heart: generateHeart, Flower: generateFlower, Balloons: generateBalloons, Sphere: (count, target) => { for (let i = 0; i < count; i += 1) { const [x, y, z] = sphere(i, count); const index = i * 3; target[index] = x; target[index + 1] = y; target[index + 2] = z } } }
 
 export function updateTemplate(name, count, target, time) { (TEMPLATE_GENERATORS[name] || generateBrain)(count, target, time) }
