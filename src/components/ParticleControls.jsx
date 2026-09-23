@@ -1,6 +1,6 @@
 import { ImagePattern } from './ImagePattern'
 
-const TEMPLATES = ['Brain', 'DNA', 'Saturn', 'Galaxy', 'Earth']
+const TEMPLATES = ['Brain', 'DNA', 'Saturn', 'Galaxy', 'Earth', 'Flower', 'Balloons']
 
 const COLOR_FIELDS = {
   Brain: [['main', 'BRAIN COLOR'], ['pulse', 'NEURAL PULSE COLOR']],
@@ -8,6 +8,8 @@ const COLOR_FIELDS = {
   Saturn: [['planet', 'PLANET COLOR'], ['ring', 'RING COLOR']],
   Galaxy: [['core', 'CORE / CENTRE COLOR'], ['outer', 'OUTER GALAXY COLOR']],
   Earth: [['ocean', 'OCEAN COLOR'], ['land', 'LAND COLOR'], ['atmosphere', 'ATMOSPHERE COLOR']],
+  Flower: [['main', 'PETAL COLOR'], ['pulse', 'STEM COLOR']],
+  Balloons: [['balloonOne', 'BALLOON 1 COLOR'], ['balloonTwo', 'BALLOON 2 COLOR'], ['balloonThree', 'BALLOON 3 COLOR'], ['string', 'STRING COLOR']],
 }
 
 export function ParticleControls({ template, onTemplateChange, palette, onColorChange, onResetColors, minimized, onToggle, imageData, onImageLoad }) {
