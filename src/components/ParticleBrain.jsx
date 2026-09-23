@@ -12,6 +12,11 @@ function getParticleGroup(template, index) {
   if (template === 'DNA') return index % 3 === 2 ? 'connector' : index % 2 === 0 ? 'strandOne' : 'strandTwo'
   if (template === 'Saturn') return index % 3 === 0 ? 'ring' : 'planet'
   if (template === 'Galaxy') return index % 5 === 0 ? 'core' : 'outer'
+  if (template === 'Flower') return index < COUNT * 0.78 ? 'main' : 'pulse'
+  if (template === 'Balloons') {
+    if (index >= COUNT * 0.8) return 'string'
+    return ['balloonOne', 'balloonTwo', 'balloonThree'][index % 3]
+  }
   return index % 7 === 0 ? 'pulse' : 'main'
 }
 
